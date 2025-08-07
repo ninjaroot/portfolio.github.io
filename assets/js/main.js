@@ -1,5 +1,15 @@
 "use strict";
 
+
+(function () {
+  if (!localStorage.getItem("darkSwitch")) {
+    localStorage.setItem("darkSwitch", "dark");
+    document.body.setAttribute("data-theme", "dark");
+  } else if (localStorage.getItem("darkSwitch") === "dark") {
+    document.body.setAttribute("data-theme", "dark");
+  }
+})();
+
 //Enable tooltips everywhere
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

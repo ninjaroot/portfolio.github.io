@@ -4,14 +4,30 @@
  * Licensed under MIT (https://github.com/coliff/dark-mode-switch/blob/main/LICENSE)
  */
 
-var darkSwitch = document.getElementById("darkSwitch");
-window.addEventListener("load", function () {
-  if (darkSwitch) {
-    initTheme();
-    darkSwitch.addEventListener("change", function () {
-      resetTheme();
-    });
+// Force dark theme early before page render to avoid flash of light
+(function () {
+  const userPref = localStorage.getItem("darkSwitch");
+
+  if (userPref === "dark" || !userPref) {
+    localStorage.setItem("darkSwitch", "dark");
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
   }
+})();
+
+window.addEventListener("DOMContentLoaded", function () {
+  var darkSwitch = document.getElementById("darkSwitch");
+
+  if (!darkSwitch) return;
+
+  // ✅ Initialize theme and checkbox state
+  initTheme(darkSwitch);
+
+  // ✅ Listen for user toggle
+  darkSwitch.addEventListener("change", function () {
+    resetTheme(darkSwitch);
+  });
 });
 
 /**
@@ -25,14 +41,15 @@ window.addEventListener("load", function () {
  * 'data-theme' attribute will not be set.
  * @return {void}
  */
-function initTheme() {
-  var darkThemeSelected =
-    localStorage.getItem("darkSwitch") !== null &&
-    localStorage.getItem("darkSwitch") === "dark";
-  darkSwitch.checked = darkThemeSelected;
-  darkThemeSelected
-    ? document.body.setAttribute("data-theme", "dark")
-    : document.body.removeAttribute("data-theme");
+function initTheme(darkSwitch) {
+  const isDark = localStorage.getItem("darkSwitch") === "dark";
+  darkSwitch.checked = isDark;
+
+  if (isDark) {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
 }
 
 /**
@@ -41,12 +58,12 @@ function initTheme() {
  * applied.
  * @return {void}
  */
-function resetTheme() {
+function resetTheme(darkSwitch) {
   if (darkSwitch.checked) {
-    document.body.setAttribute("data-theme", "dark");
+    document.documentElement.setAttribute("data-theme", "dark");
     localStorage.setItem("darkSwitch", "dark");
   } else {
-    document.body.removeAttribute("data-theme");
-    localStorage.removeItem("darkSwitch");
+    document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem("darkSwitch", "light");
   }
 }
