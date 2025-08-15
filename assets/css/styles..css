@@ -885,11 +885,6 @@ body[data-theme="dark"] .text-muted {
 }
 
 
-
-/* --- Performance tweaks --- */
-.yt-lite > img{ will-change: opacity, filter; }
-
-/* Ensure any @font-face uses swap (if embedded) */
-@font-face{
-  font-display: swap;
-}
+/* Performance helpers */
+.yt-lite > img { will-change: opacity, filter; }
+@font-face { font-display: swap; }
