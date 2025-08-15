@@ -152,7 +152,7 @@ a.dotted-link:hover {
   background: #b0b7bf;
   width: 36px;
   height: 36px;
-  display: inline-block;
+  display: inline-flex; align-items:center; justify-content:center;
   border-radius: 50%;
   -moz-background-clip: padding;
   -webkit-background-clip: padding-box;
@@ -160,6 +160,8 @@ a.dotted-link:hover {
   color: #fff;
   text-align: center;
 }
+.header .profile-content .social a .svg-inline--fa { margin-top: 0; line-height: 1; }
+.header .profile-content .social a i, .header .profile-content .social a svg { line-height: 1; }
 
 .header .profile-content .social a:hover {
   background: #778492;
@@ -888,3 +890,75 @@ body[data-theme="dark"] .text-muted {
 /* Performance helpers */
 .yt-lite > img { will-change: opacity, filter; }
 @font-face { font-display: swap; }
+
+/* ===== Fix: prevent image/text overlap in project items ===== */
+.item.project-card {
+  /* نخلي صف المشروع Grid مستقل */
+  display: grid !important;
+  grid-template-columns: minmax(220px, 340px) 1fr; /* عمود للصورة + عمود للمحتوى */
+  gap: clamp(16px, 2.5vw, 28px);
+  align-items: start;
+}
+
+/* داخل الجريد، امنع أي سلوك قديم للـcol-* يلغّي الجريد */
+.item.project-card > [class*="col-"] {
+  width: auto !important;
+  max-width: 100% !important;
+  flex: 0 0 auto !important;
+  float: none !important;
+  padding: 0 !important;     /* لو عايز مسافة داخلية زوّدها هنا بدل padding البوتستراب */
+}
+
+/* الصورة: عرض كامل داخل عمودها ومن غير float */
+.item.project-card picture,
+.item.project-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  float: none !important;
+  margin: 0;
+  border-radius: 8px;        /* اختياري */
+  object-fit: cover;
+}
+
+/* خلي المحتوى يلف طبيعي ومفيش أوفرلاب */
+.item.project-card .col-md-8 {
+  min-width: 0;
+}
+
+/* موبايل: عمود واحد */
+@media (max-width: 900px) {
+  .item.project-card {
+    grid-template-columns: 1fr;
+  }
+  .item.project-card > [class*="col-"] {
+    padding: 0 !important;
+  }
+}
+
+
+/* ---- APPEND: uniform project cards ---- */
+
+/* === Uniform project thumbnail sizing (videos & images) === */
+.item.project-card { grid-template-columns: minmax(240px, 340px) 1fr !important; }
+
+/* Let the grid column control width; keep square thumbnails */
+.yt-lite{ max-width: 100%; } /* override earlier 600px */
+.item.project-card .col-md-4 > .yt-lite,
+.item.project-card .col-md-4 > picture {
+  display:block;
+  width:100%;
+  aspect-ratio: 1 / 1;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+/* Ensure <picture><img> fills and crops nicely */
+.item.project-card .col-md-4 > picture > img{
+  width:100%; height:100%; object-fit:cover;
+}
+
+/* Small screens: keep single column */
+@media (max-width: 900px){
+  .item.project-card { grid-template-columns: 1fr !important; }
+}
