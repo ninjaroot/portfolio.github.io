@@ -893,23 +893,23 @@ body[data-theme="dark"] .text-muted {
 
 /* ===== Fix: prevent image/text overlap in project items ===== */
 .item.project-card {
-  /* نخلي صف المشروع Grid مستقل */
+
   display: grid !important;
-  grid-template-columns: minmax(220px, 340px) 1fr; /* عمود للصورة + عمود للمحتوى */
+  grid-template-columns: minmax(220px, 340px) 1fr;
   gap: clamp(16px, 2.5vw, 28px);
   align-items: start;
 }
 
-/* داخل الجريد، امنع أي سلوك قديم للـcol-* يلغّي الجريد */
+
 .item.project-card > [class*="col-"] {
   width: auto !important;
   max-width: 100% !important;
   flex: 0 0 auto !important;
   float: none !important;
-  padding: 0 !important;     /* لو عايز مسافة داخلية زوّدها هنا بدل padding البوتستراب */
+  padding: 0 !important;    
 }
 
-/* الصورة: عرض كامل داخل عمودها ومن غير float */
+
 .item.project-card picture,
 .item.project-card img {
   display: block;
@@ -917,16 +917,14 @@ body[data-theme="dark"] .text-muted {
   height: auto;
   float: none !important;
   margin: 0;
-  border-radius: 8px;        /* اختياري */
+  border-radius: 8px;       
   object-fit: cover;
 }
 
-/* خلي المحتوى يلف طبيعي ومفيش أوفرلاب */
 .item.project-card .col-md-8 {
   min-width: 0;
 }
 
-/* موبايل: عمود واحد */
 @media (max-width: 900px) {
   .item.project-card {
     grid-template-columns: 1fr;
