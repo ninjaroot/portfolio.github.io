@@ -962,3 +962,22 @@ body[data-theme="dark"] .text-muted {
 @media (max-width: 900px){
   .item.project-card { grid-template-columns: 1fr !important; }
 }
+
+:root{
+  --media-size: 200px;   /* ← حط المقاس اللي تحبه لكل الفيديوهات */
+}
+
+/* خلي عرض عمود الميديا من متغيّر واحد */
+.item.project-card { grid-template-columns: var(--media-size) 1fr !important; }
+
+/* اختار النسبة: مربّع أو 16:9 */
+.item.project-card .col-md-4 > .yt-lite,
+.item.project-card .col-md-4 > picture {
+  width: 100%;
+  aspect-ratio: 1 / 1;    /* غيّرها لـ 16 / 9 لو عايز مستطيل */
+  border-radius: 12px;
+  overflow: hidden;
+}
+.item.project-card .col-md-4 > picture > img{
+  width:100%; height:100%; object-fit:cover;
+}
