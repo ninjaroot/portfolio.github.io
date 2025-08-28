@@ -1044,3 +1044,42 @@ body[data-theme="dark"] .text-muted {
 ul{padding-left: 1.1rem;}
 /* Avoid images floating into text */
 img{max-width:100%;height:auto;float:none;}
+
+
+/* ===== Video layout fix (2025-08-29) ===== */
+/* Use modern aspect-ratio to avoid extra black bars and duplicated posters */
+.item.project-card .video-wrapper{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  padding: 0 !important;
+  background: #000;
+  overflow: hidden;
+}
+/* Fit iframe/video perfectly inside wrapper */
+.item.project-card .video-wrapper > iframe,
+.item.project-card .video-wrapper > video,
+.item.project-card .yt-lite > iframe{
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  border: 0;
+}
+
+/* If a thumbnail <img> is left in markup after the iframe, hide it to prevent the second box */
+.item.project-card .video-wrapper + img,
+.item.project-card iframe + img{
+  display: none !important;
+}
+
+/* If an iframe is used without wrapper, still keep aspect ratio */
+.item.project-card iframe[src*="youtube"],
+.item.project-card iframe.video{
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16/9;
+  height: auto;
+  display: block;
+}
