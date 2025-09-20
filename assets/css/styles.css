@@ -1116,3 +1116,134 @@ img{max-width:100%;height:auto;float:none;}
 .item.project-card .yt-lite.play > button{
   display: none !important;
 }
+
+
+
+/* ======== [YT-LITE CLEAN OVERLAY - FINAL PATCH] ========
+   - Preserve original sizes (no width/max-width/aspect-ratio changes)
+   - Show thumbnail image as background
+   - Add a single clean Play overlay (circle + triangle)
+   - Hide overlay & thumbnail when playing (.play is added by JS)
+   - Ensure any existing overlays are neutralized to avoid double icons
+=========================================================== */
+
+/* 0) Neutralize any prior overlays on yt-lite */
+.yt-lite::before,
+.yt-lite::after{
+  content: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 1) Base positioning (no size changes) */
+.yt-lite{ position: relative; }
+.yt-lite > button{ display: none !important; } /* in case any button remains */
+
+/* 2) Ensure thumbnail fills the box defined by the theme */
+.yt-lite > img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block !important;
+  opacity: 1 !important;
+  z-index: 1;
+}
+
+/* 3) Single clean Play overlay (circle + triangle via inline SVG) */
+.yt-lite::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(40px, 8%, 72px);
+  height: clamp(40px, 8%, 72px);
+  border-radius: 50%;
+  background:
+    rgba(0,0,0,.28)
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='40,30 40,70 72,50' fill='white'/></svg>")
+    center / 48% no-repeat;
+  border: 2px solid rgba(255,255,255,.95);
+  box-shadow: 0 4px 16px rgba(0,0,0,.35);
+  pointer-events: none;
+  z-index: 2;
+  transition: transform .16s ease, background-color .16s ease, opacity .16s ease;
+}
+.yt-lite:hover::after{
+  transform: translate(-50%, -50%) scale(1.06);
+  background-color: rgba(0,0,0,.34);
+}
+
+/* 4) When playing, hide thumbnail & overlay, and ensure iframe fills */
+.yt-lite.play::after{ display: none !important; }
+.yt-lite.play > img{ display: none !important; }
+.yt-lite.play > iframe{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 3;
+}
+
+/* ======== [END PATCH] ======== */
+
+
+/* === FINAL: centered white circle + triangle overlay (no layout changes) === */
+.yt-lite{ position: relative !important; }
+
+/* remove any legacy overlay layers */
+.yt-lite::before,
+.yt-lite::after{
+  right: auto !important;
+  bottom: auto !important;
+}
+
+/* circle */
+.yt-lite::before{
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(calc(-50% + 6%), -50%) !important;
+  width: clamp(56px, 9%, 92px) !important;
+  height: clamp(56px, 9%, 92px) !important;
+  border-radius: 50% !important;
+  background: rgba(0,0,0,.28) !important;         /* subtle contrast */
+  border: 2px solid rgba(255,255,255,.96) !important;
+  box-shadow: 0 4px 18px rgba(0,0,0,.45) !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+  transition: transform .16s ease, background-color .16s ease !important;
+}
+
+/* triangle */
+.yt-lite::after{
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(calc(-50% + 6%), -50%) !important;
+  width: clamp(56px, 9%, 92px) !important;
+  height: clamp(56px, 9%, 92px) !important;
+  pointer-events: none !important;
+  z-index: 11 !important;
+  background:
+    url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>\
+  <polygon points='40,30 40,70 72,50' fill='white'/>\
+</svg>") center / 68% no-repeat !important;
+  filter: drop-shadow(0 4px 14px rgba(0,0,0,.55)) !important;
+  transition: transform .16s ease, filter .16s ease !important;
+}
+
+/* hover pop */
+.yt-lite:hover::before{ transform: translate(-50%, -50%) scale(1.06) !important; background: rgba(0,0,0,.34) !important; }
+.yt-lite:hover::after{  transform: translate(-50%, -50%) scale(1.06) !important; filter: drop-shadow(0 6px 20px rgba(0,0,0,.65)) !important; }
+
+/* hide overlay while playing */
+.yt-lite.play::before,
+.yt-lite.play::after{ display: none !important; }

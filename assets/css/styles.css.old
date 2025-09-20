@@ -979,3 +979,407 @@ body[data-theme="dark"] .text-muted {
 .item.project-card .col-md-4 > picture > img{
   width:100%; height:100%; object-fit:cover;
 }
+
+/* ===== Custom mobile fixes (2025-08-29) ===== */
+:root{
+  --space: clamp(12px, 2vw, 20px);
+}
+/* Make main containers breathe on small screens */
+@media (max-width: 768px){
+  .container, .wrapper, .primary, .secondary, .sections-wrapper {
+    padding-left: var(--space);
+    padding-right: var(--space);
+  }
+  /* Stack two-column sections cleanly */
+  .sections-wrapper .secondary, .sections-wrapper .primary {
+    width: 100% !important;
+    float: none !important;
+  }
+  /* Project cards: single column, image on top */
+  .item.project-card{
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .item.project-card .col-md-4, 
+  .item.project-card .col-md-8{
+    width: 100% !important;
+    float: none !important;
+    padding: 0 !important;
+  }
+  .item.project-card img, 
+  .item.project-card iframe, 
+  .item.project-card .video-wrapper{
+    width: 100% !important;
+    height: auto !important;
+  }
+  /* Prevent text overlapping/overflow */
+  h1, h2, h3, .heading, .section-title{
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.25;
+  }
+  p, li{
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  /* Tighten side cards (skills/contact) */
+  .aside .item, .contact-info, .skills-section{
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+/* Ensure embedded videos are responsive */
+.video-wrapper, .yt-lite, .embed-responsive{
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+}
+.video-wrapper iframe, .yt-lite iframe{
+  position: absolute;
+  top:0;left:0;width:100%;height:100%;
+}
+/* Fix bullets spacing on mobile */
+ul{padding-left: 1.1rem;}
+/* Avoid images floating into text */
+img{max-width:100%;height:auto;float:none;}
+
+
+/* ===== Video layout fix (2025-08-29) ===== */
+/* Use modern aspect-ratio to avoid extra black bars and duplicated posters */
+.item.project-card .video-wrapper{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  padding: 0 !important;
+  background: #000;
+  overflow: hidden;
+}
+/* Fit iframe/video perfectly inside wrapper */
+.item.project-card .video-wrapper > iframe,
+.item.project-card .video-wrapper > video,
+.item.project-card .yt-lite > iframe{
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  border: 0;
+}
+
+/* If a thumbnail <img> is left in markup after the iframe, hide it to prevent the second box */
+.item.project-card .video-wrapper + img,
+.item.project-card iframe + img{
+  display: none !important;
+}
+
+/* If an iframe is used without wrapper, still keep aspect ratio */
+.item.project-card iframe[src*="youtube"],
+.item.project-card iframe.video{
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16/9;
+  height: auto;
+  display: block;
+}
+
+
+/* ===== YouTube lite fix: ensure thumbnail fills box without extra black bars ===== */
+.item.project-card .yt-lite{
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  overflow: hidden;
+  border-radius: 12px;
+}
+.item.project-card .yt-lite > img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.item.project-card .yt-lite > button{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.item.project-card .yt-lite.play > img,
+.item.project-card .yt-lite.play > button{
+  display: none !important;
+}
+
+/* === 1) Play overlay للفيديو داخل الـ .featured-image (بدون تعديل HTML) === */
+.featured-image {
+  position: relative; /* علشان نقدر نرسم الأوفرلاي */
+}
+
+/* دائرة بلاي */
+.featured-image::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 74px;
+  height: 74px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(0,0,0,0.35);
+  border: 2px solid rgba(255,255,255,0.9);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+  pointer-events: none; /* ما تمنعش الكليك على الفيديو */
+  transition: transform .2s ease, opacity .2s ease;
+  opacity: .9;
+}
+
+/* مثلث البلاي */
+.featured-image::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(-50% + 6px), -50%); /* تزحزح بسيطة يمين */
+  border-style: solid;
+  border-width: 12px 0 12px 20px;
+  border-color: transparent transparent transparent rgba(255,255,255,0.95);
+  pointer-events: none;
+  transition: transform .2s ease, opacity .2s ease;
+  opacity: .95;
+}
+
+/* لمسة تفاعل */
+.featured-image:hover::before,
+.featured-image:hover::after {
+  transform: translate(-50%, -50%) scale(1.06);
+  opacity: 1;
+}
+
+/* لو فيه خلفية سوداء، خفّفها بحاجة خفيفة تبان إنها Video */
+.featured-image {
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.05), rgba(0,0,0,0.35));
+  border-radius: 8px; /* توافق مع الموجود */
+  overflow: hidden;
+}
+
+/* نتأكد إن الـ iframe واخد المساحة كاملة */
+.featured-image iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* === 2) تكبير مساحة الفيديو (مع الحفاظ على الأداء والاستجابة) === */
+/* وسّعنا عرض الكارت الرئيسي للفيديو المميّز بدون التأثير على باقي الشبكة */
+.item.featured .featured-image {
+  /* سيطرة ذكية على العرض: أصغر شيء 320px، أكبر شيء 1080px، والباقي حسب عرض الشاشة */
+  width: clamp(320px, 92vw, 1080px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* في الشاشات الكبيرة خلِّ القسم نفسه أوسع سنة */
+@media (min-width: 1200px) {
+  .section {
+    max-width: 1200px; /* كان 1100 تقريبًا – زياده بسيطة */
+  }
+}
+
+/* لو فيه Grid للأعمال/الكروت، نكبّر عمود الكروت شوية علشان الفيديوهات تكون أوسع طبيعيًا */
+.grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* كان minmax أصغر في الأغلب */
+}
+
+/* اختياري: ظلّ بسيط حوالين الفيديو يوضح إنه قابل للنقر */
+.featured-image {
+  box-shadow: 0 6px 30px rgba(0,0,0,0.25);
+}
+
+
+/* ===== Fix 1: Play overlay على الديف الداخلي اللي ماسك الـ iframe ===== */
+.featured-image > div[style*="position:relative"] {
+  position: relative !important; /* تأكيد */
+}
+
+/* خلي الـ iframe تحت الأوفرلاي */
+.featured-image > div[style*="position:relative"] iframe {
+  position: absolute !important;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 1; /* تحت الأوفرلاي */
+}
+
+/* دائرة الـ Play */
+.featured-image > div[style*="position:relative"]::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 74px; height: 74px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(0,0,0,0.35);
+  border: 2px solid rgba(255,255,255,0.9);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+  pointer-events: none;
+  z-index: 2;
+  opacity: .95;
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+/* مثلث الـ Play */
+.featured-image > div[style*="position:relative"]::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(calc(-50% + 6px), -50%);
+  border-style: solid;
+  border-width: 12px 0 12px 20px;
+  border-color: transparent transparent transparent rgba(255,255,255,0.95);
+  pointer-events: none;
+  z-index: 2;
+  opacity: .98;
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+/* هوفر خفيف */
+.featured-image > div[style*="position:relative"]:hover::before,
+.featured-image > div[style*="position:relative"]:hover::after {
+  transform: translate(-50%, -50%) scale(1.06);
+  opacity: 1;
+}
+
+/* خلفية خفيفة علشان مايبانش أسود فاضي لو الـ lazy لسه محمّلش */
+.featured-image > div[style*="position:relative"] {
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.05), rgba(0,0,0,0.4));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ===== Fix 2: تكبير مساحة الفيديو من غير لمس الـ HTML ===== */
+/* وسّع عرض الفيديو المميّز (featured) بس */
+.item.featured .featured-image {
+  max-width: clamp(360px, 94vw, 1080px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* في الشاشات الواسعة، وسّع الحاوية العامة سنة */
+@media (min-width: 1200px) {
+  .section { max-width: 1200px; }
+}
+
+/* لو عندك شبكة كروت، خلّي الحد الأدنى أعرض سنة */
+.grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+/* ظلّ بسيط يوضح إنه عنصر قابل للنقر */
+.featured-image { box-shadow: 0 6px 30px rgba(0,0,0,0.25); }
+
+/* لا نغيّر أبعاد yt-lite إطلاقًا؛ بس نثبت الصورة والزّر فوقها */
+.yt-lite { position: relative; }
+
+/* الصورة تشغل كامل مساحة الصندوق (المساحة يحددها القالب نفسه) */
+.yt-lite > img{
+  position: absolute; 
+  inset: 0;
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;      /* تمنع تمدد غريب وتحافظ على النسبة */
+  display: block !important;
+  opacity: 1 !important;
+  z-index: 1;
+}
+
+/* علامة التشغيل (من غير ما تمنع الكليك) */
+.yt-lite > button{
+  all: unset;
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.35);
+  border: 2px solid rgba(255,255,255,.9);
+  display: grid; place-items: center;
+  color: #fff; font-size: 26px; line-height: 1;
+  box-shadow: 0 4px 18px rgba(0,0,0,.35);
+  pointer-events: none;   /* ما يمنعش الضغط على العنصر نفسه */
+  z-index: 2;
+}
+
+/* عند التشغيل القالب بيحط .play → نخفي الصورة والزر ونسيب الـ iframe */
+.yt-lite.play > img,
+.yt-lite.play > button{ display: none !important; }
+
+/* لا نلمس أبعاد yt-lite إطلاقًا */
+.yt-lite { position: relative; }
+
+/* Overlay: دائرة + مثلث Play فوق الصورة */
+.yt-lite::before,
+.yt-lite::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;   /* الكليك يشتغل على العنصر نفسه */
+  z-index: 2;
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+/* الدائرة */
+.yt-lite::before{
+  width: 64px; height: 64px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(0,0,0,.35);
+  border: 2px solid rgba(255,255,255,.95);
+  box-shadow: 0 4px 18px rgba(0,0,0,.35);
+  opacity: .95;
+}
+
+/* المثلث */
+.yt-lite::after{
+  border-style: solid;
+  border-width: 12px 0 12px 20px;
+  border-color: transparent transparent transparent rgba(255,255,255,.98);
+  transform: translate(calc(-50% + 6px), -50%);
+  opacity: .98;
+}
+
+/* لمسة هوفر خفيفة */
+.yt-lite:hover::before,
+.yt-lite:hover::after{
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* الصورة تملأ الصندوق ولا تتأثر */
+.yt-lite > img{
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block !important;
+  z-index: 1;
+}
+
+/* عند التشغيل (القالب بيضيف .play) نخفي الأيقونة ونسيب الـ iframe */
+.yt-lite.play::before,
+.yt-lite.play::after{ display: none !important; }
+.yt-lite.play > img{ display: none !important; }
+.yt-lite > button { display: none !important; }
+
+.yt-lite.play > iframe{
+  position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 3;
+}
+/* أخفي أي زر Play قديم عشان مايبقاش فيه طبقتين */
